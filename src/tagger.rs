@@ -21,8 +21,8 @@ fn collect_tags(source_dir: &Path) -> Result<BTreeMap<String, Vec<TagEntry>>> {
             continue;
         }
 
-        // Skip files inside the tags directory
-        if path.components().any(|c| c.as_os_str() == "tags") {
+        // Skip files inside the _tags directory
+        if path.components().any(|c| c.as_os_str() == "_tags") {
             continue;
         }
 
@@ -70,10 +70,8 @@ fn extract_title(path: &Path) -> Option<String> {
 fn generate_tag_page(tag: &str, entries: &[TagEntry]) -> String {
     let mut md = String::new();
     md.push_str(&format!("# Tag: {}\n\n", tag));
-    md.push_str("| 文章 | 路径 |\n");
-    md.push_str("|------|------|\n");
     for (title, path) in entries {
-        md.push_str(&format!("| {} | {} |\n", title, path));
+        md.push_str(&format!("- [{}]({})\n", title, path));
     }
     md
 }
@@ -119,8 +117,8 @@ pub fn run_preprocess() -> Result<()> {
             "Chapter": {
                 "name": format!("Tag: {}", tag),
                 "content": page_content,
-                "path": format!("tags/{}.md", tag),
-                "parent_names": ["tags"]
+                "path": format!("_tags/{}.md", tag),
+                "parent_names": ["_tags"]
             }
         });
         tag_sections.push(tag_section);
@@ -131,7 +129,7 @@ pub fn run_preprocess() -> Result<()> {
         "Chapter": {
             "name": "Tags",
             "content": tags_index_content,
-            "path": "tags/SUMMARY.md",
+            "path": "_tags/SUMMARY.md",
             "parent_names": []
         }
     });
@@ -150,7 +148,7 @@ pub fn run_preprocess() -> Result<()> {
 pub fn generate_tags(book_dir: &str) -> Result<()> {
     let book_path = Path::new(book_dir);
     let src_dir = book_path.join("src");
-    let tags_dir = src_dir.join("tags");
+    let tags_dir = src_dir.join("_tags");
 
     let tag_map = collect_tags(&src_dir)?;
 
@@ -159,7 +157,7 @@ pub fn generate_tags(book_dir: &str) -> Result<()> {
         return Ok(());
     }
 
-    // Create tags directory
+    // Create _tags directory
     std::fs::create_dir_all(&tags_dir)?;
 
     // Generate tags index
