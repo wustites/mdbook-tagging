@@ -5,7 +5,7 @@ An mdbook preprocessor that generates tag index pages from frontmatter metadata.
 ## Features
 
 - Scans markdown files for `tags` in YAML frontmatter
-- Generates `tags/` directory with per-tag index pages
+- Generates `_tags/` directory with per-tag index pages
 - Works as both **mdbook preprocessor** and **standalone CLI**
 
 ## Frontmatter Format
@@ -49,7 +49,27 @@ Then run `mdbook build` as usual.
 
 ## Generated Output
 
-For each unique tag, a page is created at `tags/<tag>.md` listing all articles with that tag. A `tags/SUMMARY.md` index page is also generated.
+For each unique tag, a page is created at `_tags/<tag>.md` listing all articles with that tag.
+
+Example `_tags/rust.md`:
+
+```markdown
+# Tag: rust
+
+- [Introduction](../chapters/intro.md)
+- [Rust Basics](../chapters/rust-basics.md)
+```
+
+A `_tags/SUMMARY.md` index page is also generated:
+
+```markdown
+# Tags
+
+| Tag | 文章数 |
+|-----|--------|
+| [rust](rust.md) | 2 |
+| [wasm](wasm.md) | 1 |
+```
 
 ## Build
 
