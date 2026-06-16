@@ -71,7 +71,7 @@ fn generate_tag_page(tag: &str, entries: &[TagEntry]) -> String {
     let mut md = String::new();
     md.push_str(&format!("# Tag: {}\n\n", tag));
     for (title, path) in entries {
-        md.push_str(&format!("- [{}]({})\n", title, path));
+        md.push_str(&format!("- [{}](../{})\n", title, path));
     }
     md
 }
