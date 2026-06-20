@@ -85,10 +85,7 @@ pub fn run_preprocess() -> Result<()> {
         serde_json::from_str(&input).context("Failed to parse mdbook preprocessor input")?;
 
     // Extract source directory from context
-    let root = ctx
-        .get("root")
-        .and_then(|v| v.as_str())
-        .unwrap_or(".");
+    let root = ctx.get("root").and_then(|v| v.as_str()).unwrap_or(".");
     let src_dir = Path::new(root).join("src");
 
     let tag_map = collect_tags(&src_dir)?;
