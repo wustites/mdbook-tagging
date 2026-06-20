@@ -99,22 +99,21 @@ pub fn run_preprocess() -> Result<()> {
     // Generate tag index sections
     let mut tag_sections = Vec::new();
     let mut tags_index_content = String::from("# Tags\n\n");
-    tags_index_content.push_str("| Tag | 文章数 |\n");
-    tags_index_content.push_str("|-----|--------|\n");
 
     let mut sorted_tags: Vec<_> = tag_map.keys().collect();
     sorted_tags.sort();
 
     for tag in &sorted_tags {
         let entries = &tag_map[*tag];
-        tags_index_content.push_str(&format!("| [{}]({}.md) | {} |\n", tag, tag, entries.len()));
+        let safe_name = tag.replace(' ', "-");
+        tags_index_content.push_str(&format!("- [{}]({}.md) ({})\n", tag, safe_name, entries.len()));
 
         let page_content = generate_tag_page(tag, entries);
         let tag_section = serde_json::json!({
             "Chapter": {
                 "name": format!("Tag: {}", tag),
                 "content": page_content,
-                "path": format!("_tags/{}.md", tag),
+                "path": format!("_tags/{}.md", safe_name),
                 "parent_names": ["_tags"]
             }
         });
@@ -126,7 +125,7 @@ pub fn run_preprocess() -> Result<()> {
         "Chapter": {
             "name": "Tags",
             "content": tags_index_content,
-            "path": "_tags/SUMMARY.md",
+            "path": "_tags/index.md",
             "parent_names": []
         }
     });
@@ -159,25 +158,24 @@ pub fn generate_tags(book_dir: &str) -> Result<()> {
 
     // Generate tags index
     let mut index_content = String::from("# Tags\n\n");
-    index_content.push_str("| Tag | 文章数 |\n");
-    index_content.push_str("|-----|--------|\n");
 
     let mut sorted_tags: Vec<_> = tag_map.keys().collect();
     sorted_tags.sort();
 
     for tag in &sorted_tags {
         let entries = &tag_map[*tag];
-        index_content.push_str(&format!("| [{}]({}.md) | {} |\n", tag, tag, entries.len()));
+        let safe_name = tag.replace(' ', "-");
+        index_content.push_str(&format!("- [{}]({}.md) ({})\n", tag, safe_name, entries.len()));
 
         // Write individual tag page
         let page_content = generate_tag_page(tag, entries);
-        let tag_file = tags_dir.join(format!("{}.md", tag));
+        let tag_file = tags_dir.join(format!("{}.md", safe_name));
         std::fs::write(&tag_file, page_content)?;
         println!("  Generated: {}", tag_file.display());
     }
 
     // Write index
-    let index_file = tags_dir.join("SUMMARY.md");
+    let index_file = tags_dir.join("index.md");
     std::fs::write(&index_file, index_content)?;
     println!("  Generated: {}", index_file.display());
 
